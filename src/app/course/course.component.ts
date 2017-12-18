@@ -1,0 +1,52 @@
+import {Component, OnInit, Input, OnDestroy} from '@angular/core';
+import {Observable} from "rxjs/Observable";
+import {Lesson} from "../shared/model/lesson";
+import {CoursesHttpService} from "../services/courses-http.service";
+import {Course} from "../shared/model/course";
+import {LessonsPagerService} from '../services/lessons-pager.service';
+
+@Component({
+    selector: 'course',
+    templateUrl: './course.component.html',
+    styleUrls: ['./course.component.css'],
+    providers: [LessonsPagerService]
+})
+export class CourseComponent implements OnInit, OnDestroy {
+
+    @Input()
+    id: number = 1;
+
+    course$: Observable<Course>;
+    lessons$: Observable<Lesson[]>;
+
+    constructor(private coursesService: CoursesHttpService, private lessonsPagerService: LessonsPagerService) {
+    }
+
+    ngOnInit() {
+        this.course$ = this.coursesService.findCourseById(this.id);
+        this.lessons$ = this.lessonsPagerService.lessonsPage$;
+        this.lessonsPagerService.loadFirstPage(this.id);
+    }
+
+
+    ngOnDestroy() {
+        console.log('destroying CourseComponent ...');
+    }
+
+    previousLessonsPage() {
+        this.lessonsPagerService.previous();
+
+    }
+
+    nextLessonsPage() {
+        this.lessonsPagerService.next();
+    }
+}
+
+
+
+
+
+
+
+
